@@ -1,0 +1,97 @@
+Student		Student Assessment		Assessment		School	
+Student ID		Student ID			Assessment ID		School ID
+Last Name		Assessment ID			Assessment Name	School Name
+FirstName		School ID
+			      Assessed Date
+		       	Numeric Score
+
+
+--	Produce a list of all students and their assessments taken and what school they were taken at. Include the assessment score and date taken.
+Order by School, Assessment Name, and Student Last Name.
+
+Select
+St.StudentID,
+st.LastName,
+st.FirstName
+from studentassessment s
+full join assessment a
+on a.assessmentid = s.assessmentid
+full join student st
+on st.studentid = s.studentid
+where assessmentname is null 
+
+order by studentid
+
+--	Produce a list of students who did not take any assessment at all. Show their ID, First Name and Last Name. Order by their ID
+Select
+St.StudentID,
+st.LastName,
+st.FirstName
+from studentassessment s
+full join assessment a
+on a.assessmentid = s.assessmentid
+full join student st
+on st.studentid = s.studentid
+where assessmentname is null 
+
+order by studentid
+
+-- Produce a list of schools with the list of assessments per school and a count of each assessment. Show the School Name, Assessment Name, and Count of assessments.
+If no assessment is taken, then show “No assessment Taken” under the Assessment Name. Order by the count of assessments in descending order.
+
+Select
+sc.SchoolName,
+IsNull(AssessmentName, 'No Assessment Taken') as AssessmentName,
+Count(*) as TestCount
+
+From studentassessment s
+full join assessment a
+on a.assessmentid = s.assessmentid
+full join school sc
+on sc.schoolid = s.SchoolId
+Group by SchoolName, AssessmentName
+Order by testcount desc
+
+-- Find the average result of each test at each school which had an assessment taken. Show the School Name, Assessment Name, and the average result. 
+Sort by order of school name and assessment name. Only show average results less than 400.
+
+Select
+SchoolName,
+AssessmentName,
+Avg(NumericScore) as AverageScore
+From studentassessment s
+join assessment a
+on a.assessmentid = s.assessmentid
+join school sc
+on sc.schoolid = s.schoolid
+
+Group by schoolname, assessmentname, numericscore
+Having NumericScore < 400
+
+order by schoolname, assessmentname desc
+
+-- Find the highest scoring student per assessment and show the assessment name, student’s full name, ID, score, and date taken. Order by assessment name
+
+Select distinct a.assessmentname,
+st.firstname + ' ' + st.Lastname 'FullName',
+st.StudentID,
+s.NumericScore,
+s.Assesseddate
+from studentassessment s
+
+inner join (select AssessmentName, max(NumericScore) HighScore
+from studentassessment s
+join assessment a
+on a.assessmentid = s.assessmentid
+group by assessmentname)m
+on m.HighScore = s.NumericScore
+
+full join assessment a
+on a.AssessmentId = s.assessmentID
+join student st
+on st.studentid = s.studentid
+
+order by assessmentname  
+
+
+

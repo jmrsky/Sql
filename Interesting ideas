@@ -1,0 +1,18 @@
+-- I found a lot of interesting query ideas on HackerRank and various coding forums I indulge in. Here are some interesting join and aggregation ideas
+and since added to my skillset!
+
+
+--Pull a list of bookings on the day of 2012-09-14 which will cost the member (or guest) more than $30. 
+Guests have different costs to members (the listed costs are per half-hour 'slot'), and the guest user is always ID 0.
+Include the facility name, member's name formatted as a single column, and the cost.
+Order descending by cost WITHOUT subqueries.
+
+select m.firstname || ' ' || m.surname as member, 
+facs.name as facility, 
+case when m.memid = 0 then bks.slots*facs.guestcost else bks.slots*facs.membercost end as cost
+ from cd.members mems
+ inner join cd.bookings bks on mems.memid = bks.memid 
+inner join cd.facilities facs on bks.facid = facs.facid 
+
+where bks.starttime >= '2012-09-14' and bks.starttime < '2012-09-15'
+ and ( (mems.memid = 0 and bks.slots*facs.guestcost > 30) or (mems.memid != 0 and bks.slots*facs.membercost > 30) ) order by cost desc;
